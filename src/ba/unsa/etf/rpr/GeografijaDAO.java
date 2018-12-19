@@ -1,9 +1,6 @@
 package ba.unsa.etf.rpr;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class GeografijaDAO {
@@ -13,7 +10,7 @@ public class GeografijaDAO {
     public GeografijaDAO() {
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Dalija\\IdeaProjects\\rpr-t9tut\\src\\baza.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Desktop\\rpr-t9\\src\\baza.db");
 
             String upit1 = "INSERT INTO main.grad(id, naziv, broj_stanovnika, drzava) " +
                     "VALUES (1, 'Pariz', 2200000, 1)";
@@ -63,14 +60,36 @@ public class GeografijaDAO {
         if(instance == null) initialize();
         return instance;
     }
-
     Grad glavniGrad(String drzava){
         Grad g = null;
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery("SELECT * from main.drzava where naziv = " + drzava);
+            if(result == null) return null;
 
+            int id1 = result.findColumn("glavni_grad");
+            ResultSet res2 = stmt.executeQuery("select * from main.grad where id = " + id1);
+            Grad g1 = new Grad(res2.getString("naziv"), res2.getInt("id") , res2.getInt("brojStanovnika"), res2.getInt("drzava"));
+
+            g = g1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return g;
     }
+
     void obrisiDrzavu(String drzava){}
-    void dodajGrad(Grad grad){}
+    void dodajGrad(Grad grad){
+        try {
+            Statement stm = conn.createStatement();
+            stm.executeUpdate("insert into grad (id, naziv, broj_stanovnika, drzava) values (" + grad.getId() +", " + grad.getNaziv() + ", " + grad.getBrojStanovnika() +
+                    ", " + grad.getDrzava() + ")");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    void dodajDrzavu(Drzava drzava){}
     void izmijeniGrad(Grad grad){}
     Drzava nadjiDrzavu(String drzava){
         Drzava d = null;
