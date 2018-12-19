@@ -7,7 +7,13 @@ public class Main {
 
     public static String ispisiGradove(){
         String temp = new String();
-
+        GeografijaDAO gd = new GeografijaDAO();
+        ArrayList<Grad> lista = gd.gradovi();
+        int i =lista.size();
+        while(i > 0){
+            temp += lista.get(i) + "\n";
+            i--;
+        }
         return temp;
     }
     public static void glavniGrad(){
