@@ -1,131 +1,238 @@
 package ba.unsa.etf.rpr;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class GeografijaDAO {
-    private static GeografijaDAO instance = null;
-    private Connection conn;
 
-    public GeografijaDAO() {
+public class GeografijaDAO {
+    private static GeografijaDAO instance;
+    private static Connection connection;
+    private String databaseURL = "jdbc:sqlite:baza.db";
+
+    private boolean databaseExists() {
+        File db = new File("baza.db");
+
+        return db.exists();
+    }
+    private GeografijaDAO() {
+        boolean init = !databaseExists();
+
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\User\\Desktop\\rpr-t9\\src\\ba\\unsa\\etf\\rpr\\baza.db");
-//            String upit0 = "CREATE TABLE grad(" +
-//                    "id INTEGER PRIMARY KEY NOT NULL, " +
-//                    "naziv VARCHAR(45) NULL, " +
-//                    "broj_stanovnika INTEGER);" +
-//                    "CREATE TABLE drzava(" +
-//                    "id INTEGER PRIMARY KEY NOT NULL, " +
-//                    "naziv VARCHAR(45) NULL," +
-//                    "glavni_grad INTEGER REFERENCES grad(id));" +
-//                    "ALTER TABLE grad ADD drzava INTEGER REFERENCES drzava(id); ";
-
-            String upit1 = "INSERT INTO grad(id, naziv, broj_stanovnika, drzava) " +
-                    "VALUES (1, 'Pariz', 2200000, 1)";
-
-            String upit2 = "INSERT INTO grad(id, naziv, broj_stanovnika, drzava) " +
-                    "VALUES (2, 'London', 8136000, 2)";
-
-            String upit3 = "INSERT INTO grad(id, naziv, broj_stanovnika, drzava) " +
-                    "VALUES (3, 'Vienna', 1868000, 3)";
-
-            String upit4 = "INSERT INTO grad(id, naziv, broj_stanovnika, drzava) " +
-                    "VALUES (4, 'Manchester', 510746, 2)";
-
-            String upit5 = "INSERT INTO grad(id, naziv, broj_stanovnika, drzava) " +
-                    "VALUES (5, 'Gratz',  283869, 3)";
-
-            String upit6 = "insert into drzava(id, naziv, glavni_grad) " +
-                    "values (1, 'France', 1)";
-            String upit7 = "insert into drzava(id, naziv, glavni_grad)" +
-                    "values(2, 'UK', 2)";
-            String upit8 = "insert into drzava(id, naziv, glavni_grad)" +
-                    "values(3, 'Austria', 3)";
-
-            Statement stmt = conn.createStatement();
-//            stmt.executeUpdate(upit0);
-            stmt.executeUpdate(upit1);
-            stmt.executeUpdate(upit2);
-            stmt.executeUpdate(upit3);
-            stmt.executeUpdate(upit4);
-            stmt.executeUpdate(upit5);
-            stmt.executeUpdate(upit6);
-            stmt.executeUpdate(upit7);
-            stmt.executeUpdate(upit8);
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            connection = DriverManager.getConnection(databaseURL);
+            if(init) {
+                initializeDatabase();
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
-    private static void initialize(){
+
+    private void initializeDatabase() {
+        String createGradTable = "create table grad (id integer primary key, naziv text, broj_stanovnika integer);";
+        String createDrzavaTable = "create table drzava (id integer primary key, naziv text, glavni_grad integer references grad(id));";
+        String alterGradTable = "alter table grad add drzava integer references drzava(id);";
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute(createGradTable);
+            statement.execute(createDrzavaTable);
+            statement.execute(alterGradTable);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        Grad paris = new Grad(-1, "Pariz", 2206488, null);
+        Grad london = new Grad(-1, "London", 8825000, null);
+        Grad betsch = new Grad(-1, "Beč", 1899055, null);
+        Grad manch = new Grad(-1, "Manchester", 545500, null);
+        Grad graz = new Grad(-1, "Graz", 280200, null);
+
+        Drzava fran = new Drzava(-1, "Francuska", paris);
+        Drzava vBrit = new Drzava(-1, "Velika Britanija", london);
+        Drzava aut = new Drzava(-1, "Austrija", betsch);
+
+        paris.setDrzava(fran);
+        london.setDrzava(vBrit);
+        betsch.setDrzava(aut);
+        manch.setDrzava(vBrit);
+        graz.setDrzava(aut);
+
+        dodajGrad(paris);
+        dodajGrad(london);
+        dodajGrad(betsch);
+        dodajGrad(manch);
+        dodajGrad(graz);
+        dodajDrzavu(fran);
+        dodajDrzavu(vBrit);
+        dodajDrzavu(aut);
+    }
+
+    private static void initialize() {
         instance = new GeografijaDAO();
     }
-    public static void removeInstance(){
+
+    public static void removeInstance() {
         instance = null;
+        if(connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
-    public static GeografijaDAO getInstance(){
-        if(instance == null) initialize();
+
+    public static GeografijaDAO getInstance() {
+        if(instance == null)
+            initialize();
         return instance;
     }
-    Grad glavniGrad(String drzava){
-        Grad g = null;
-        try {
-            Statement stmt = conn.createStatement();
-            ResultSet result = stmt.executeQuery("SELECT * from main.drzava where naziv = " + drzava);
-            if(result == null) return null;
 
-            int id1 = result.findColumn("glavni_grad");
-            ResultSet res2 = stmt.executeQuery("select * from main.grad where id = " + id1);
-            Grad g1 = new Grad(res2.getString("naziv"), res2.getInt("id") , res2.getInt("brojStanovnika"), res2.getInt("drzava"));
+    public ArrayList<Grad> gradovi() {
+        ArrayList<Grad> gradovi = new ArrayList<>();
+        ArrayList<Drzava> drzave = new ArrayList<>();
 
-            g = g1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return g;
-    }
-
-    void obrisiDrzavu(String drzava){}
-    void dodajGrad(Grad grad){
-        try {
-            Statement stm = conn.createStatement();
-            stm.executeUpdate("insert into grad (id, naziv, broj_stanovnika, drzava) values (" + grad.getId() +", " + grad.getNaziv() + ", " + grad.getBrojStanovnika() +
-                    ", " + grad.getDrzava() + ")");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    void dodajDrzavu(Drzava drzava){}
-    void izmijeniGrad(Grad grad){}
-    Drzava nadjiDrzavu(String drzava){
-        Drzava d = null;
-
-        return d;
-    }
-    ArrayList<Grad> gradovi(){
-        ArrayList<Grad> lista = new ArrayList<>();
+        String query = "select g.id g_id, g.naziv g_naziv, g.broj_stanovnika g_brstan," +
+                "d.id d_id, d.naziv d_naziv, d.glavni_grad d_ggrad " +
+                " from grad g, drzava d" +
+                " where g.drzava = d.id";
 
         try {
-            String upit1 = "SELECT id, naziv, broj_stanovnika from grad; ";
-            Statement stmt = conn.createStatement();
-            ResultSet result = stmt.executeQuery(upit1);
-            while(result.next()) {
-                Grad g = new Grad(result.getString(1) ,result.getInt(2), result.getInt(3), result.getInt(4));
-                lista.add(g);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while(resultSet.next()) {
+                int gId = resultSet.getInt("g_id");
+                String gNaziv = resultSet.getString("g_naziv");
+                int gBrojStan = resultSet.getInt("g_brstan");
+                int dId = resultSet.getInt("d_id");
+                String dNaziv = resultSet.getString("d_naziv");
+                int dgGrad = resultSet.getInt("d_ggrad");
+
+                Grad noviGrad = new Grad(gId, gNaziv, gBrojStan, null);
+                Drzava novaDrzava = containsDrzava(drzave, dId);
+                if(novaDrzava == null) {
+                    novaDrzava = new Drzava(dId, dNaziv, null);
+                    drzave.add(novaDrzava);
+                }
+                noviGrad.setDrzava(novaDrzava);
+                if(novaDrzava.getGlavniGrad() == null) {
+                    if(gId == dgGrad) {
+                        novaDrzava.setGlavniGrad(noviGrad);
+                    }
+                }
+                gradovi.add(noviGrad);
             }
 
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        lista.sort(Comparator.comparing(Grad::getBrojStanovnika));
-        return lista;
+        Collections.sort(gradovi, new Comparator<Grad>() {
+            @Override
+            public int compare(Grad o1, Grad o2) {
+                return o2.getBrojStanovnika()- (o1.getBrojStanovnika());
+            }
+        });
+
+
+        return gradovi;
+    }
+
+    private Drzava containsDrzava(ArrayList<Drzava> drzave, int id) {
+        for(Drzava d : drzave) {
+            if(d.getId() == id) {
+                return d;
+            }
+        }
+        return null;
+    }
+
+    public Grad glavniGrad(String drzava) {
+        ArrayList<Grad> grd = gradovi();
+
+        if(grd == null)
+            return null;
+
+        for(Grad g : grd) {
+            if(g.getDrzava().getNaziv().equals(drzava)) {
+                return g;
+            }
+        }
+        return null;
+    }
+
+    public Drzava nadjiDrzavu(String drzava) {
+        String query = "select d.id, d.naziv, d.glavni_grad from drzava d where d.naziv=?;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, drzava);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.isClosed())
+                return null;
+
+            int id = resultSet.getInt(1);
+            int gGrad = resultSet.getInt(2);
+            return new Drzava(id, drzava, glavniGrad(drzava));
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    public void dodajGrad(Grad grad) {
+        String query = "insert into grad values(?, ?, ?, ?);";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, grad.getId());
+            preparedStatement.setString(2, grad.getNaziv());
+            preparedStatement.setInt(3, grad.getBrojStanovnika());
+            preparedStatement.setInt(4,grad.getDrzava().getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void dodajDrzavu(Drzava drzava) {
+        String query = "insert into drzava values (?, ?, ?);";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, drzava.getId());
+            preparedStatement.setString(2, drzava.getNaziv());
+            preparedStatement.setInt(3, drzava.getGlavniGrad().getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void izmijeniGrad(Grad grad) {
+        String query = "update grad set naziv=?, broj_stanovnika=?, drzava=? where id=?;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, grad.getNaziv());
+            preparedStatement.setInt(2, grad.getBrojStanovnika());
+            preparedStatement.setInt(3, grad.getDrzava().getId());
+            preparedStatement.setInt(4, grad.getId());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void obrisiDrzavu(String drzava) {
+        String query = "delete from drzava where naziv=?;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, drzava);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
