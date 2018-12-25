@@ -17,7 +17,7 @@ public class GeografijaDAO {
 
         return db.exists();
     }
-    private GeografijaDAO() {
+    public GeografijaDAO() {
         boolean init = !databaseExists();
 
         try {
