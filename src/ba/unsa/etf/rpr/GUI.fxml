@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -40,18 +39,22 @@
    <top>
       <MenuBar prefHeight="25.0" prefWidth="444.0" BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="File">
+          <Menu mnemonicParsing="false" text="%file">
             <items>
               <MenuItem mnemonicParsing="false" text="Close" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="View">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Language">
-                     <graphic>
-                        <ComboBox prefWidth="150.0" />
-                     </graphic></MenuItem>
-            </items>
+          <Menu mnemonicParsing="false" text="%view">
+               <items>
+                  <Menu mnemonicParsing="false" text="%Language">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Bosnian" />
+                        <MenuItem mnemonicParsing="false" text="English" />
+                        <MenuItem mnemonicParsing="false" text="German" />
+                        <MenuItem mnemonicParsing="false" text="French" />
+                    </items>
+                  </Menu>
+               </items>
           </Menu>
         </menus>
       </MenuBar>
