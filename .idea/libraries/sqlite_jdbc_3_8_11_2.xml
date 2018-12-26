@@ -2,7 +2,6 @@
   <library name="sqlite-jdbc-3.8.11.2">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../sqlite-jdbc-3.8.11.2.jar" />
-      <root url="jar://$PROJECT_DIR$/jasperreports-6.7.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

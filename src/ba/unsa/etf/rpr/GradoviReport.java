@@ -11,8 +11,8 @@ import java.util.HashMap;
 public class GradoviReport extends JFrame {
 
     public void showReport(Connection conn) throws JRException {
-        String reportSrcFile = getClass().getResource("/reports/gradovi.jrxml").getFile();
-        String reportsDir = getClass().getResource("/reports/").getFile();
+        String reportSrcFile = getClass().getResource("C:\\Users\\User\\Desktop\\rpr-t10\\gradovi.jrxml").getFile();
+        String reportsDir = getClass().getResource("C:\\Users\\User\\Desktop\\rpr-t10").getFile();
 
         JasperReport jasperReport = JasperCompileManager.compileReport(reportSrcFile);
         HashMap<String, Object> parameters = new HashMap<String, Object>();
@@ -26,5 +26,9 @@ public class GradoviReport extends JFrame {
         this.add(viewer);
         this.setSize(700, 500);
         this.setVisible(true);
+    }
+
+    public void saveAs(String ekstenzija){
+
     }
 }

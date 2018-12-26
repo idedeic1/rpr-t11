@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
 public class GUI extends Application {
 
@@ -30,9 +29,7 @@ public class GUI extends Application {
             return;
         }
         primaryStage.setTitle("Tutorijal 10");
-        primaryStage.setScene(new Scene(root, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
-        primaryStage.setMinWidth(600);
-        primaryStage.setMinHeight(400);
+        primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
 
     }
