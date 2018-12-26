@@ -1,5 +1,8 @@
 package ba.unsa.etf.rpr;
 
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.swing.JRViewer;
+
 import javax.swing.*;
 import java.sql.Connection;
 import java.util.ArrayList;
