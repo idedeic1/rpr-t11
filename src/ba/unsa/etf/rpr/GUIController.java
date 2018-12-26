@@ -1,12 +1,12 @@
 package ba.unsa.etf.rpr;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -16,8 +16,6 @@ public class GUIController {
     public BorderPane glavna;
 
     private void selectLanguage(Locale locale) {
-
-
         Stage primaryStage = (Stage)glavna.getScene().getWindow();
         Locale.setDefault(locale);
         ResourceBundle bundle = ResourceBundle.getBundle("Translation");
@@ -45,5 +43,7 @@ public class GUIController {
     public void francuski(ActionEvent actionEvent){
         Locale.setDefault(new Locale("fr", "FR"));
     }
+    public void saveAs(ActionEvent actionEvent){
 
+    }
 }

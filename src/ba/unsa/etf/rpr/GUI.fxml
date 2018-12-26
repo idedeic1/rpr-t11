@@ -42,16 +42,17 @@
           <Menu mnemonicParsing="false" text="%file">
             <items>
               <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveAs" text="Save As..." />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="%view">
                <items>
                   <Menu mnemonicParsing="false" text="%Language">
                     <items>
-                      <MenuItem mnemonicParsing="false" text="Bosnian" onAction="#bosanski"/>
-                        <MenuItem mnemonicParsing="false" text="English" onAction="#engleski" />
-                        <MenuItem mnemonicParsing="false" text="German" onAction="#njemacki"/>
-                        <MenuItem mnemonicParsing="false" text="French" onAction="#francuski"/>
+                      <MenuItem mnemonicParsing="false" onAction="#bosanski" text="Bosnian" />
+                        <MenuItem mnemonicParsing="false" onAction="#engleski" text="English" />
+                        <MenuItem mnemonicParsing="false" onAction="#njemacki" text="German" />
+                        <MenuItem mnemonicParsing="false" onAction="#francuski" text="French" />
                     </items>
                   </Menu>
                </items>
