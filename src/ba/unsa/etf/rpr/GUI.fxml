@@ -48,10 +48,10 @@
                <items>
                   <Menu mnemonicParsing="false" text="%Language">
                     <items>
-                      <MenuItem mnemonicParsing="false" text="Bosnian" />
-                        <MenuItem mnemonicParsing="false" text="English" />
-                        <MenuItem mnemonicParsing="false" text="German" />
-                        <MenuItem mnemonicParsing="false" text="French" />
+                      <MenuItem mnemonicParsing="false" text="Bosnian" onAction="bosanski"/>
+                        <MenuItem mnemonicParsing="false" text="English" onAction="engleski" />
+                        <MenuItem mnemonicParsing="false" text="German" onAction="njemacki"/>
+                        <MenuItem mnemonicParsing="false" text="French" onAction="francuski"/>
                     </items>
                   </Menu>
                </items>
